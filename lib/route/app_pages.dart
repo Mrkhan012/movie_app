@@ -8,10 +8,9 @@ class AppPages {
   static const INITIAL = '/splash';
 
   static final routes = [
-        GetPage(name: '/splash', page: () => SplashScreen()),
-
-    GetPage(name: '/login', page: () => LoginScreen()),
-    GetPage(name: '/home', page: () => HomeScreen()),
+    GetPage(name: '/splash', page: () => SplashScreen(), transition: Transition.fadeIn),
+    GetPage(name: '/login', page: () => LoginScreen(), transition: Transition.rightToLeftWithFade),
+    GetPage(name: '/home', page: () => HomeScreen(), transition: Transition.leftToRightWithFade),
     GetPage(name: '/add-movie', page: () => AddMovieScreen(), transition: Transition.zoom),
   ];
 }

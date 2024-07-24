@@ -6,6 +6,7 @@ import 'package:movie_apk/controller/movie_controller.dart';
 import 'package:movie_apk/utils/app_decoration.dart';
 import 'package:movie_apk/utils/color.dart';
 import 'package:movie_apk/utils/theme.dart';
+import 'package:movie_apk/widgets/logout_confromation.dart';
 import 'add_movie_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -48,14 +49,17 @@ class HomeScreen extends StatelessWidget {
                   ),
                   child: ListTile(
                     leading: movie.posterUrl != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                                50), // Adjust the radius as needed
-                            child: Image.file(
-                              File(movie.posterUrl),
-                              width: 50, // Adjust the width as needed
-                              height: 50, // Adjust the height as needed
-                              fit: BoxFit.cover,
+                        ? Hero(
+                            tag:
+                                'moviePoster_${movie.id}', // Unique tag for each movie
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: Image.file(
+                                File(movie.posterUrl),
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           )
                         : const Icon(Icons.image),
@@ -83,7 +87,7 @@ class HomeScreen extends StatelessWidget {
                             backgroundColor: Colors.red,
                             colorText: Colors.white,
                             snackPosition: SnackPosition.BOTTOM,
-                            duration: Duration(seconds: 3),
+                            duration: const Duration(seconds: 3),
                           );
                         }
                       },
@@ -95,58 +99,29 @@ class HomeScreen extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => Get.to(const AddMovieScreen()),
+        onPressed: () => Get.toNamed('/add-movie'),
       ),
     );
   }
 
   void _showLogoutConfirmationDialog(BuildContext context) {
-    showDialog(
+    showGeneralDialog(
       context: context,
-      builder: (BuildContext context) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            dialogBackgroundColor:
-                kDefaultBlueColor, // Background color of the dialog
-            buttonTheme: const ButtonThemeData(
-              buttonColor: kDefaultBlueColor, // Background color of the buttons
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white, // Text color of the buttons
-              ),
-            ),
-          ),
-          child: AlertDialog(
-            title: const Text(
-              'Confirm Logout',
-              style: TextStyle(color: Colors.white), // Title text color
-            ),
-            content: const Text(
-              'Are you sure you want to logout?',
-              style: TextStyle(color: Colors.white), // Content text color
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  // Close the dialog
-                  Navigator.of(context).pop();
-                },
-                child: const Text('No'),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Perform logout
-                  authController.signOut();
-                  // Navigate back to the login screen
-                  Get.offAllNamed('/login');
-                },
-                child: const Text('Yes'),
-              ),
-            ],
+      barrierDismissible: true,
+      barrierLabel: '',
+      pageBuilder: (context, animation1, animation2) {
+        return const SizedBox.shrink();
+      },
+      transitionBuilder: (context, animation1, animation2, widget) {
+        return FadeTransition(
+          opacity: animation1,
+          child: ScaleTransition(
+            scale: animation1,
+            child: LogoutConfirmationDialog(authController: authController),
           ),
         );
       },
+      transitionDuration: const Duration(milliseconds: 300),
     );
   }
 }
